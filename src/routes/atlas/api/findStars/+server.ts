@@ -1,20 +1,31 @@
 
 import { StellarGenerator } from "../../../../stellarGenerator";
 import * as dotenv from "dotenv";
-import type { RequestHandler } from "@sveltejs/kit";
+import { json, redirect, type RequestHandler } from "@sveltejs/kit";
 dotenv.config();
 
-export const POST = ( async({ url }) => {
-    const jsonString = url.searchParams.get('dataMap');
-    const mapData = JSON.parse(jsonString as string);
-    // mapData.forEach(star => {
-        
-    // });
-    // const stars = await StellarGenerator.getStarData('SELECT+TOP+2000+source_id,ra,dec,parallax,COALESCE(nu_eff_used_in_astrometry,pseudocolour)+AS+tmp,phot_g_mean_mag+FROM+gaiadr3.gaia_source+WHERE+parallax>0.1+ORDER+BY+parallax+DESC');
-    // const rightAscencion = Number(url.searchParams.get('ra') as string);
-    // const declination = Number(url.searchParams.get('dec') as string);
-    // const parallax = Number(url.searchParams.get('p') as string);
-    // const query = StellarGenerator.determineStarRenderDistanceQuery(rightAscencion,declination,parallax);
-    // return json(stars);
-    return new Response();
+export const POST = ( async({ url,locals }) => {
+    console.log("AAAAAAAAAAAAAA");
+    const data = url.searchParams.get('dataMap') as string;
+    const starData:string[] = data.split(';');
+    console.log(starData);
+    starData.pop();
+    const recognisedGAIAStarIds:string[] = []
+    for(const star of starData) {
+        const coordinates = star.split(":")[1];
+        console.log(coordinates);
+        const ra=Number(coordinates.split(' ')[0]);
+        let dec=Number(coordinates.split(' ')[1]);
+        if(dec==0)
+            dec = dec=Number(coordinates.split('  ')[1]);
+        const query = `SELECT+TOP+1+source_id,ra,dec,parallax,COALESCE(nu_eff_used_in_astrometry,pseudocolour)+AS+tmp,phot_g_mean_mag,designation+FROM+gaiadr3.gaia_source+WHERE+CONTAINS(POINT(ra,dec),CIRCLE(${ra},${dec},0.001388888888888889))=1`;
+        const GAIAstar = (await StellarGenerator.getStarData(query))[0];
+        if(GAIAstar)
+            recognisedGAIAStarIds.push(GAIAstar.id);
+    }
+    console.log(recognisedGAIAStarIds);
+    console.log("MAIKITE SA MOI: "+locals.user);
+    console.log(`http://localhost:5173/atlas?ids=${JSON.stringify(recognisedGAIAStarIds)}`);
+    throw redirect(302,`http://localhost:5173/atlas?ids=${JSON.stringify(recognisedGAIAStarIds)}`)
+    // return new Response();
 }) satisfies RequestHandler;
