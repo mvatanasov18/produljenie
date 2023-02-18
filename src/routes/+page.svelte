@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { concurrent } from 'svelte-typewriter';
+	import Typewriter from 'svelte-typewriter';
 </script>
 
 <div class="center-items">
@@ -8,27 +8,26 @@
 		<span class="second-half">Index</span>
 	</h1>
 	<section style="position: absolute;top:20%;">
-		<p />
 		<div class="center-items">
-		<p use:concurrent={{ interval: 30 }}>
-			Welcome to StarIndex! 
-			Your ultimate guide to the night sky.
-		</p>
-		<p use:concurrent={{ interval: 30 }}>
-			Step into the world of stargazing and discover the beauty of the universe with our 3D map.
+		<Typewriter>
+<p>Welcome to StarIndex!
+Your ultimate guide to the night sky.</p>
+		</Typewriter>
+		<Typewriter>
+			<p>Step into the world of stargazing and discover the beauty of the universe with our 3D map.
 			Create an account, log in, upload a photo of the night sky, and watch as we create a map of
-			the stars just for you.
-		</p>
+			the stars just for you.</p>
+		</Typewriter>
 		<img src="starDust.jpeg" alt="prahulqk" />
-		<p use:concurrent={{ interval: 30 }}>
-			With high-quality photos, you can be sure to get an accurate map of the stars. Explore the
-			surrounding stars and even create your own personal constellation. Name it, and share it with
-			the world when it's approved by our admin.
-		</p>
+		<Typewriter>
+		<p>	With high-quality photos, you can be sure to get an accurate map of the stars. Explore the
+	surrounding stars and even create your own personal constellation. Name it, and share it with
+the world when it's approved by our admin.</p>
+		</Typewriter>
 		<img src="OshtePrahulqk.png" alt="prahulqk" />
-		<p use:concurrent={{ interval: 30 }}>
+		<Typewriter>
 			So what are you waiting for? Sign up now and start exploring the universe!
-		</p>
+		</Typewriter>
 		</div>
 	</section>
 </div>

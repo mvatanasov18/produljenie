@@ -1,4 +1,6 @@
-import { connect, type config } from "mssql";
+import type { config} from "mssql";
+import pkg from 'mssql';
+const { connect } = pkg;
 import * as dotenv from "dotenv";
 dotenv.config();
 

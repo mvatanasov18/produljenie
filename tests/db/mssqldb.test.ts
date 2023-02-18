@@ -1,5 +1,7 @@
 import { mssqlConnection } from '../../src/db/mssqldb';
-import { ConnectionPool, Request } from 'mssql';
+import { ConnectionPool } from 'mssql';
+import pkg from 'mssql';
+const { Request } = pkg;
 import { v4 as uuidv4 } from 'uuid';
 describe('mssqlConnection', () => {
 	it('should return a valid connection', async () => {

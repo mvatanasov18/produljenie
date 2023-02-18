@@ -1,6 +1,7 @@
 import type { Handle } from "@sveltejs/kit";
 import { mssqlConnection } from './db/mssqldb';
-import { Request } from 'mssql';
+import pkg from 'mssql';
+const { Request } = pkg;
 
 export const handle:Handle = async ({event, resolve})=>{
 

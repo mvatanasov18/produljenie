@@ -58,16 +58,8 @@
 </script>
 
 <style>
-  .UIcontainer {
-    width: 150px;
-  }
-
   #tutorial {
     font-size:25px;
-  }
-
-  .card {
-    background: linear-gradient(176deg, rgb(18, 24, 27) 50%, rgb(32, 39, 55) 100%);
   }
 </style>
   <Row>‎ </Row>

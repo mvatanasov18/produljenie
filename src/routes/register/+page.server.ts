@@ -1,6 +1,7 @@
 import { json,redirect } from '@sveltejs/kit';
 import { mssqlConnection } from '../../db/mssqldb';
-import { Request } from 'mssql';
+import pkg from 'mssql';
+const { Request } = pkg;
 import type { Action, Actions,PageServerLoad  } from './$types';
 import { fail } from '@sveltejs/kit';
 import {v4 as uuidv4} from 'uuid';

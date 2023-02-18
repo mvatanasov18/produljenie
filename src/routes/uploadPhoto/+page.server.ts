@@ -1,7 +1,9 @@
-import { ImgurClient } from 'imgur';
+import pkgg from 'imgur';
+const { ImgurClient } = pkgg;
 import type { PageServerLoad, Action, Actions } from './$types';
 import { mssqlConnection } from '../../db/mssqldb';
-import { Request } from 'mssql';
+import pkg from 'mssql';
+const { Request } = pkg;
 import { v4 as uuidv4 } from 'uuid';
 import { fail, redirect } from '@sveltejs/kit';
 let username: string;
