@@ -1,5 +1,3 @@
-import pkgg from 'imgur';
-const { ImgurClient } = pkgg;
 import type { PageServerLoad, Action, Actions } from './$types';
 import { mssqlConnection } from '../../db/mssqldb';
 import pkg from 'mssql';
@@ -15,12 +13,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 		username = locals.user.username;
 	}
 };
-const client = new ImgurClient({
-	accessToken: process.env.TOKEN,
-	clientId: process.env.CLIENT_ID,
-	clientSecret: process.env.CLIENT_SECRET,
-	refreshToken: process.env.REFRESH_TOKEN
-});
+
+
 
 
 async function getStardataFromLink(link:string) {
@@ -57,7 +51,7 @@ async function fetchData(starNames: object) {
 
 	let formData="";
 
-	let validStarNames = starNames.filter(starName => {
+	let validStarNames = starNames.filter((starName: string) => {
 		return starName.match(/^\w+\s+\d+.*$/g) || starName.startsWith("The star");
 	});
 	for(let starName in validStarNames){
@@ -116,12 +110,21 @@ async function saveURL(url: string) {
 async function uploadToUmgur(file: File) {
 	const buffer = Buffer.from(await file.arrayBuffer());
 	const base64 = buffer.toString('base64');
-	const response = await client.upload({
-		image: base64,
-		type: 'base64'
-	});
-	console.log(response.data);
-	return response.data;
+	let apiUrl = 'https://api.imgur.com/3/image';
+	const formData= new FormData();
+	formData.append("image",base64);
+	let link="";
+	const responce =await fetch(apiUrl,{
+		method:"post",
+		headers:{
+			Authorization: "Client-ID "+process.env.CLIENT_ID
+		},
+		body:formData
+	}).then(data => data.json()).then(data=>{
+		console.log(data.data.link)
+		link =data.data.link;
+	})
+	return link;
 }
 
 async function fetchAstrometrySessionKey(apikey: string) {
@@ -183,7 +186,8 @@ const upload: Action = async ({ request }) => {
 			console.log(form.get('img'));
 			if (image) {
 				console.log(`Received file with name: ${image.name}`);
-				const link = (await uploadToUmgur(image)).link;
+				await uploadToUmgur(image);
+				const link = (await uploadToUmgur(image));
 				console.log(link);
 				if (await saveURL(link)) {
 					//should go to the 3d map
