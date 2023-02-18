@@ -7,6 +7,7 @@ import { fail, redirect } from '@sveltejs/kit';
 let username: string;
 
 export const load: PageServerLoad = async ({ locals }) => {
+	
 	if (!locals.user) {
 		throw redirect(302, 'login');
 	} else {
@@ -83,9 +84,7 @@ async function getStardataFromLink(link:string) {
 				
 				const dataFor3dMap = await fetchData(jobResult.tags);
 				console.log(dataFor3dMap);
-				const maybeJson=JSON.stringify( dataFor3dMap)
-				console.log(maybeJson);
-				await fetch(`http://localhost:5173/atlas/api/findStars?dataMap={${maybeJson}},{method:'POST'}`);
+				await fetch(`http://localhost:5173/atlas/api/findStars?dataMap=${dataFor3dMap}`,{method:'POST'});
 
 			} else {
 				//no stars found
