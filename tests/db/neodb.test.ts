@@ -30,16 +30,14 @@ describe('neo4jSession', () => {
 		async function deleteStar(starName: string) {
 			const session = driver.session({ database: 'neo4j' });
 			try {
-				const deleteQuery = `MATCH (s1:Star { givenName: "$starName" })
-                                DETACH DELETE s1`;
+				const deleteQuery = `MATCH (s1:Star { scientificName: "${starName}" }) DETACH DELETE s1`;
 
-				const deleteResult = await session.executeWrite((tx) => tx.run(deleteQuery, { starName }));
+				const deleteResult = await session.executeWrite((tx) => tx.run(deleteQuery));
 
                 console.log(deleteResult);
                 
 				// Check if the node is deleted
-				const checkQuery = `MATCH (s1:Star { givenName: "$starName" })
-                                RETURN s1`;
+				const checkQuery = `MATCH (s1:Star { scientificName: "$starName" }) RETURN s1`;
 
 				const checkResult = await session.executeRead((tx) => tx.run(checkQuery, { starName }));
 
@@ -53,7 +51,7 @@ describe('neo4jSession', () => {
 
 		const ursaMajor: StarData[] = [
 			{
-				id: 1234,
+				id: "1234",
 				rightAscencion: 165.4606,
 				declination: 56.3825,
 				parallax: 0.0275,
@@ -65,7 +63,7 @@ describe('neo4jSession', () => {
 				givenName: undefined
 			},
 			{
-				id: 5678,
+				id: "5678",
 				rightAscencion: 166.7161,
 				declination: 63.0993,
 				parallax: 0.0122,
@@ -77,7 +75,7 @@ describe('neo4jSession', () => {
 				givenName: undefined
 			},
 			{
-				id: 9012,
+				id: "9012",
 				rightAscencion: 161.5722,
 				declination: 58.7544,
 				parallax: 0.0385,
@@ -89,7 +87,7 @@ describe('neo4jSession', () => {
 				givenName: undefined
 			},
 			{
-				id: 3456,
+				id: "3456",
 				rightAscencion: 165.4606,
 				declination: 56.3825,
 				parallax: 0.0275,
@@ -101,7 +99,7 @@ describe('neo4jSession', () => {
 				givenName: undefined
 			},
 			{
-				id: 7890,
+				id: "7890",
 				rightAscencion: 200.9819,
 				declination: 54.9254,
 				parallax: 0.0023,
@@ -113,7 +111,7 @@ describe('neo4jSession', () => {
 				givenName: undefined
 			},
 			{
-				id: 2345,
+				id: "2345",
 				rightAscencion: 166.0221,
 				declination: 55.9598,
 				parallax: 0.0056,
@@ -126,6 +124,7 @@ describe('neo4jSession', () => {
 			}
 		];
 		const ursaMajorData: ConstellationData = {
+			id:"234234",
 			name: 'Ursa Major',
 			discoverer: 'Isaac Newton',
 			connections: [
@@ -136,31 +135,31 @@ describe('neo4jSession', () => {
 				{ startingStar: ursaMajor[0], endingStar: ursaMajor[4] }, // Dubhe to Mizar
 				{ startingStar: ursaMajor[4], endingStar: ursaMajor[5] } // Mizar to Alioth
 			],
-			viewedFromStarId: 999
+			viewedFromStarId: "999"
 		};
 
-		// for (const star of ursaMajor) {
-		// 	const session = driver.session({ database: 'neo4j' });
-		// 	const createStarQuery = `CREATE (:Star { 
-        //               id: ${star.id},
-        //               rightAscencion: ${star.rightAscencion},
-        //               declination: ${star.declination},
-        //               parallax: ${star.parallax},
-        //               pseudocolor: "${star.pseudocolor}",
-        //               mag: ${star.mag},
-        //               coordinates:[${star.coordinates.x},${star.coordinates.y},${
-		// 		star.coordinates.z
-		// 	}],
-        //               discoverer: ${star.discoverer ? `"${star.discoverer}"` : 'null'},
-        //               scientificName: ${star.scientificName ? `"${star.scientificName}"` : 'null'},
-        //               givenName: ${star.givenName ? `"${star.givenName}"` : 'null'}
-        //             })`;
-		// 	console.log(createStarQuery);
+		for (const star of ursaMajor) {
+			const session = driver.session({ database: 'neo4j' });
+			const createStarQuery = `CREATE (:Star { 
+                      id: ${star.id},
+                      rightAscencion: ${star.rightAscencion},
+                      declination: ${star.declination},
+                      parallax: ${star.parallax},
+                      pseudocolor: "${star.pseudocolor}",
+                      mag: ${star.mag},
+                      coordinates:[${star.coordinates.x},${star.coordinates.y},${
+				star.coordinates.z
+			}],
+                      discoverer: ${star.discoverer ? `"${star.discoverer}"` : 'null'},
+                      scientificName: ${star.scientificName ? `"${star.scientificName}"` : 'null'},
+                      givenName: ${star.givenName ? `"${star.givenName}"` : 'null'}
+                    })`;
+			console.log(createStarQuery);
 
-		// 	const res = await session.executeWrite((tx) => tx.run(createStarQuery));
+			const res = await session.executeWrite((tx) => tx.run(createStarQuery));
 
-		// 	session.close();
-		// }
+			session.close();
+		}
 
 		//delete the constellation
 		for (const star of ursaMajor) {
