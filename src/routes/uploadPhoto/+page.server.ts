@@ -13,34 +13,6 @@ export const load: PageServerLoad = async ({ locals }) => {
 		throw redirect(302, 'login');
 	} else {
 		username = locals.user.username;
-
-		if (process.env.NOVA_KEY) {
-			const sessionKey = await fetchAstrometrySessionKey(process.env.NOVA_KEY);
-			const data = await submitURL(sessionKey, 'http://apod.nasa.gov/apod/image/1206/ldn673s_block1123.jpg');
-			console.log(data);
-			const jobResult = await getJobResults(data)
-
-			if (jobResult.status === "success") {
-				console.log(jobResult.tags)
-				if (jobResult.tags.length) {
-					//post to 3d map
-					console.log("found stars");
-
-					const dataFor3dMap = await fetchData(jobResult.tags);
-					const maybeJson=JSON.stringify( dataFor3dMap)
-					console.log(maybeJson);
-					await fetch(`http://localhost:5173/atlas/api/findStars?dataMap={${maybeJson}},{method:'POST'}`);
-
-				} else {
-					//no stars found
-					fail(500, { error: false, noStars: true })
-				}
-			} else {
-				//display error 
-				//ask the user to send the image again
-				fail(500, { error: true, noStars: true })
-			}
-		}
 	}
 };
 const client = new ImgurClient({
@@ -49,6 +21,37 @@ const client = new ImgurClient({
 	clientSecret: process.env.CLIENT_SECRET,
 	refreshToken: process.env.REFRESH_TOKEN
 });
+
+
+async function getStardataFromLink(link:string) {
+	if (process.env.NOVA_KEY) {
+		const sessionKey = await fetchAstrometrySessionKey(process.env.NOVA_KEY);
+		const data = await submitURL(sessionKey, link);
+		console.log(data);
+		const jobResult = await getJobResults(data)
+
+		if (jobResult.status === "success") {
+			console.log(jobResult.tags)
+			if (jobResult.tags.length) {
+				//post to 3d map
+				console.log("found stars");
+
+				const dataFor3dMap = await fetchData(jobResult.tags);
+				const maybeJson=JSON.stringify( dataFor3dMap)
+				console.log(maybeJson);
+				await fetch(`http://localhost:5173/atlas/api/findStars?dataMap={${maybeJson}},{method:'POST'}`);
+
+			} else {
+				//no stars found
+				fail(500, { error: false, noStars: true })
+			}
+		} else {
+			//display error 
+			//ask the user to send the image again
+			fail(500, { error: true, noStars: true })
+		}
+	}
+}
 
 async function fetchData(starNames: object) {
 
@@ -183,6 +186,8 @@ const upload: Action = async ({ request }) => {
 				const link = (await uploadToUmgur(image)).link;
 				console.log(link);
 				if (await saveURL(link)) {
+					//should go to the 3d map
+					await getStardataFromLink(link);
 					return link;
 				} else {
 					fail(500, { error: true, noStars: false });
