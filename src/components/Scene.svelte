@@ -15,6 +15,7 @@
     export let data: PageData;
     let stars: StarData[];
     let displayConstellations = false;
+    const isFromImage = data.isFromImage
     let constellations: ConstellationData[];
     
     let creatableConstellation: ConstellationData = {
@@ -28,6 +29,15 @@
     let targetedStar: StarData = {id:'0', rightAscencion:0, declination:0, parallax:0,pseudocolor:'',mag:0, coordinates:{x:0,y:0,z:0},discoverer:undefined,scientificName:undefined,givenName:undefined};
 
     stars = data.stars;
+    if(isFromImage) {
+        targetStar.set(data.mainStar as StarData);
+        stars.map(s=>{
+            if((data.ids as string[]).includes(s.id))
+                s.pseudocolor="#ff0000";
+        });
+    }
+        
+    
     constellations = data.constellations;
     
     let tweenedOrbitControlTargetCoordinates = tweened<Position>({x:0,y:0,z:0}, {
