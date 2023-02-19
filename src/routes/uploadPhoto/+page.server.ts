@@ -94,12 +94,12 @@ async function getStardataFromLink(link: string) {
 
 			} else {
 				//no stars found
-				return fail(500, { error: false, noStars: true })
+				return "http://localhost:5173/uploadPhoto";
 			}
 		} else {
 			//display error 
 			//ask the user to send the image again
-			return fail(500, { error: true, noStars: true })
+			return "http://localhost:5173/uploadPhoto";
 		}
 	}
 }
