@@ -7,47 +7,51 @@ import { fail, redirect } from '@sveltejs/kit';
 let username: string;
 
 export const load: PageServerLoad = async ({ locals }) => {
-	
+
 	if (!locals.user) {
 		throw redirect(302, 'login');
 	} else {
+
 		username = locals.user.username;
+
+
+		// const dataFor3dMap="NGC 6823:295.7940 +23.3210;";
+		// const res = await fetch(`http://localhost:5173/atlas/api/findStars?dataMap=${dataFor3dMap}`,{method:'POST'});
+		// console.log(res.url);
+		// throw redirect(303,res.url)
 	}
 };
 
 
-
-
-
 async function fetchData(starNames: object) {
 
-	let formData="";
+	let formData = "";
 
 	let validStarNames = starNames.filter((starName: string) => {
 		return starName.match(/^\w+\s+\d+.*$/g) || starName.startsWith("The star");
 	});
-	for(let starName in validStarNames){
-		
-		formData+=await setStarNameAndCoordinates(validStarNames[starName],formData)
+	for (let starName in validStarNames) {
+
+		formData += await setStarNameAndCoordinates(validStarNames[starName], formData)
 	}
 	return formData;
 }
 
-async function setStarNameAndCoordinates(starName:string,formData:string) {
+async function setStarNameAndCoordinates(starName: string, formData: string) {
 	if (starName.startsWith("The star")) {
 		starName = starName.slice("The star".length).trim();
 	}
-	let index=starName.indexOf("(")
-	if(index!==-1){
-		starName = starName.slice(0,index)
+	let index = starName.indexOf("(")
+	if (index !== -1) {
+		starName = starName.slice(0, index)
 	}
 	starName = starName.replace(/ /g, "+");
 	const res = await fetch("https://cds.unistra.fr/cgi-bin/nph-sesame?" + starName);
 	starName = starName.replace("+", " ");
 	const text = await res.text();
-	const row=getDataRow(text)	
-	
-	
+	const row = getDataRow(text)
+
+
 	return `${starName}:${row};`
 }
 
@@ -65,12 +69,11 @@ function getDataRow(text: string): string {
 	return "";
 }
 
-async function getStardataFromLink(link:string) {
-	if (process.env.NOVA_KEY) {		
+async function getStardataFromLink(link: string) {
+	if (process.env.NOVA_KEY) {
 		//get session
 		const sessionKey = await fetchAstrometrySessionKey(process.env.NOVA_KEY);
 		const data = await postPhotoToAstrometry(sessionKey, link);
-		console.log(data);
 		const jobResult = await getJobResults(data)
 
 		if (jobResult.status === "success") {
@@ -80,46 +83,50 @@ async function getStardataFromLink(link:string) {
 			if (jobResult.tags.length) {
 				//post to 3d map
 				console.log("found stars");
-				
-				
+
+
 				const dataFor3dMap = await fetchData(jobResult.tags);
 				console.log(dataFor3dMap);
-				await fetch(`http://localhost:5173/atlas/api/findStars?dataMap=${dataFor3dMap}`,{method:'POST'});
+				const res = await fetch(`http://localhost:5173/atlas/api/findStars?dataMap=${dataFor3dMap}`, { method: 'POST' });
+				console.log(res.url);
+				
+				return res.url;
 
 			} else {
 				//no stars found
-				fail(500, { error: false, noStars: true })
+				return fail(500, { error: false, noStars: true })
 			}
 		} else {
 			//display error 
 			//ask the user to send the image again
-			fail(500, { error: true, noStars: true })
+			return fail(500, { error: true, noStars: true })
 		}
 	}
 }
 
 const upload: Action = async ({ request }) => {
-	try {
+
 		if (request.method === 'POST') {
 			const form = await request.formData();
 			const image = form.get('img') as File;
-			console.log(form.get('img'));
 			if (image) {
 				console.log(`Received file with name: ${image.name}`);
 				const link = (await uploadToUmgur(image));
 				console.log(link);
 				if (await saveURL(link)) {
-					//should go to the 3d map					
-					await getStardataFromLink(link);
-					return link;
+					//should go to the 3d map	
+					//post query to +server.ts				
+					const res = await getStardataFromLink(link);
+					
+					console.log();
+					
+					throw redirect(303,`${res}`);
 				} else {
 					fail(500, { error: true, noStars: false });
 				}
 			}
 		}
-	} catch (e) {
-		console.log(e);
-	}
+
 };
 
 export const actions: Actions = { upload };
@@ -165,17 +172,17 @@ async function uploadToUmgur(file: File) {
 	const buffer = Buffer.from(await file.arrayBuffer());
 	const base64 = buffer.toString('base64');
 	let apiUrl = 'https://api.imgur.com/3/image';
-	const formData= new FormData();
-	formData.append("image",base64);
-	let link="";
-	await fetch(apiUrl,{
-		method:"post",
-		headers:{
-			Authorization: "Client-ID "+process.env.CLIENT_ID
+	const formData = new FormData();
+	formData.append("image", base64);
+	let link = "";
+	await fetch(apiUrl, {
+		method: "post",
+		headers: {
+			Authorization: "Client-ID " + process.env.CLIENT_ID
 		},
-		body:formData
-	}).then(data => data.json()).then(data=>{
-		link =data.data.link;
+		body: formData
+	}).then(data => data.json()).then(data => {
+		link = data.data.link;
 	})
 	return link;
 }
@@ -194,7 +201,7 @@ async function saveURL(url: string) {
 		.input('Id', uuidv4())
 		.input('UserId', id)
 		.input('ImageURL', url)
-		.query('INSERT INTO UsersImages(Id, UserId, ImageURL) VALUES(@Id, @UserId, @ImageURL)');		
+		.query('INSERT INTO UsersImages(Id, UserId, ImageURL) VALUES(@Id, @UserId, @ImageURL)');
 	return insertResult.recordset === undefined;
 }
 

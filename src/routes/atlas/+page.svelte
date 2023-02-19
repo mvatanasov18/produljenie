@@ -5,6 +5,7 @@
 	import type { ActionData, PageData } from './$types';
   export let data: PageData;
   export let form:ActionData;
+	import { page } from '$app/stores';
 
 </script>
 
@@ -29,7 +30,7 @@
 </style>
 
 <div class="controlls-container">
-  <AtlasUI username={data.user.username} form={form}/>
+  <AtlasUI username={$page.data.user.username} form={form}/>
 </div>
 
 <div class="canvas-container">

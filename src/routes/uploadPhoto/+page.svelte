@@ -2,6 +2,8 @@
 	import { Button } from 'sveltestrap/src';
 	import type { ActionData } from "./$types"
 	export let form: ActionData;
+	import { goto } from '$app/navigation';
+
 	const dropHandler = (ev: DragEvent) => {
 		console.log('File(s) dropped');
 
@@ -52,6 +54,7 @@
 		});
 		const result = await response.json();
 		console.log(result);
+		goto(result.location)
 	};
 </script>
 <div class="center-items" style="top:10%;position:absolute;">

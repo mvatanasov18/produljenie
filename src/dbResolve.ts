@@ -9,8 +9,6 @@ async function getStarCustomInfo(starId: string): Promise<{GivenName:string|unde
         .query(
         "SELECT ds.GivenName,u.Username FROM DiscoveredStars ds INNER JOIN Users u ON ds.UserId = u.Id WHERE @StarId=ds.Id"
     );
-    console.log("custom info:"+request.recordset);
-    console.log(request.recordset);
     if(request)
         return request.recordset[0];
     return {GivenName:undefined,Username:undefined};
@@ -146,7 +144,6 @@ async function getConstellations(viewedFromStarId:string):Promise<ConstellationD
                 },
             }
             constellation.connections.push(connection);
-            console.log(constellation.connections[0].startingStar)
         }
         constellations.push(constellation);
     }

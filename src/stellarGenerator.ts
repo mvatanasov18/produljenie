@@ -30,7 +30,6 @@ class StellarGenerator {
             'content-type': 'application/json'
           }
         });
-        console.log(urlReq.url);
         let res = new Response(), isRequestComplete;
         while(!isRequestComplete) {
           res = await fetch(urlReq.url+"/phase", {

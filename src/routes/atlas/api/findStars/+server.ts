@@ -8,12 +8,10 @@ export const POST = ( async({ url,locals }) => {
     console.log("AAAAAAAAAAAAAA");
     const data = url.searchParams.get('dataMap') as string;
     const starData:string[] = data.split(';');
-    console.log(starData);
     starData.pop();
     const recognisedGAIAStarIds:string[] = []
     for(const star of starData) {
         const coordinates = star.split(":")[1];
-        console.log(coordinates);
         const ra=Number(coordinates.split(' ')[0]);
         let dec=Number(coordinates.split(' ')[1]);
         if(dec==0)
