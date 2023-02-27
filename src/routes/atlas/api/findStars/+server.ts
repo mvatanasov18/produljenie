@@ -1,11 +1,11 @@
 
 import { StellarGenerator } from "../../../../stellarGenerator";
 import * as dotenv from "dotenv";
-import { json, redirect, type RequestHandler } from "@sveltejs/kit";
+import { redirect, type RequestHandler } from "@sveltejs/kit";
 dotenv.config();
 
 export const POST = ( async({ url,locals }) => {
-    console.log("AAAAAAAAAAAAAA");
+    console.log("in the POST");
     const data = url.searchParams.get('dataMap') as string;
     const starData:string[] = data.split(';');
     starData.pop();
@@ -22,8 +22,6 @@ export const POST = ( async({ url,locals }) => {
             recognisedGAIAStarIds.push(GAIAstar.id);
     }
     console.log(recognisedGAIAStarIds);
-    console.log("MAIKITE SA MOI: "+locals.user);
     console.log(`http://localhost:5173/atlas?ids=${JSON.stringify(recognisedGAIAStarIds)}`);
     throw redirect(302,`http://localhost:5173/atlas?ids=${JSON.stringify(recognisedGAIAStarIds)}`)
-    // return new Response();
 }) satisfies RequestHandler;

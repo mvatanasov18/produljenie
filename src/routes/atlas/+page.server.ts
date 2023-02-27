@@ -22,12 +22,9 @@ export const actions: Actions = {
     const designatedName = res.get('designatedName') as string;
     const givenName = res.get('givenName') as string;
     const starId = res.get('starId') as string;
-    try{
+    
     await addStarToDiscoveries(locals.user.username,designatedName,givenName,starId);
-    }catch(e){
-      console.log("\n\n\nposlednoooo\n\n\n");
-      
-    }
+
   },
 
   async constellation({ request,locals }) {
@@ -37,12 +34,7 @@ export const actions: Actions = {
     const constellationJSON = req.get('const-connections');
     const constellation: ConstellationData = JSON.parse(constellationJSON as string);
     constellation.name = name as string;
-    try{
       constellation.discoverer =  locals.user.username;
-    }catch(e){
-      console.log("\n\n\ntukaaaaaaaa\n\n\n\n");
-      
-    }
     
     constellation.id = generateUUID()
     constellation.viewedFromStarId = viewedFromStarIdentifier as string;

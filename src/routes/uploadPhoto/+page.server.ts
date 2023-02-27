@@ -70,6 +70,7 @@ function getDataRow(text: string): string {
 }
 
 async function getStardataFromLink(link: string) {
+	while(true){
 	if (process.env.NOVA_KEY) {
 		//get session
 		const sessionKey = await fetchAstrometrySessionKey(process.env.NOVA_KEY);
@@ -92,16 +93,10 @@ async function getStardataFromLink(link: string) {
 				
 				return res.url;
 
-			} else {
-				//no stars found
-				return "http://localhost:5173/uploadPhoto";
-			}
-		} else {
-			//display error 
-			//ask the user to send the image again
-			return "http://localhost:5173/uploadPhoto";
-		}
+			} 
+		} 
 	}
+}
 }
 
 const upload: Action = async ({ request }) => {

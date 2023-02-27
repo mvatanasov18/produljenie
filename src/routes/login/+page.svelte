@@ -3,8 +3,8 @@
 	import Login from '../../components/Login.svelte';
 	export let form: ActionData;
 </script>
-
-<div class="center-items">
+<div>
+<div class="center-items" style="margin-top: 10%;">
 	<h1>Login</h1>
 
 	{#if form?.user}
@@ -15,4 +15,5 @@
     {:else}
     <p>Login is successful</p>
 	{/if}
+</div>
 </div>

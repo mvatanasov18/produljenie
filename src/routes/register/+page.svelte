@@ -7,7 +7,7 @@
   </script>
   
 
-  <div class="center-items">
+  <div class="center-items" style="margin-top: 10%;">
       <h1>Register</h1>
   
     
